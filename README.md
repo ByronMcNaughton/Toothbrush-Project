@@ -5,9 +5,9 @@ The project was coded in python, using AWS services to make it publicly accessib
 There are three main python files;  
 **Generate_data.py**  
 Generates the sales data for the toothbrushes and handles the upload of this data to the database  
-**generate_api_data.py**  
+**save_data_to_s3.py**  
 generates the json data for the api, then stores this in a file on s3  
-**api.py**  
+**retrieveandsendjsondata.py**  
 fetches the api data from s3 and returns it to the user  
 
 ### AWS Services:
