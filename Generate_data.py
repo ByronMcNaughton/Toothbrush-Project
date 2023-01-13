@@ -25,7 +25,7 @@ def main():
     if not insp.has_table("orders"):
         first_order_date = pd.to_datetime('2022-01-01')
         next_id = 1
-
+    #if orders table does exist then find the last day that was generated, the day following this will be the start point
     else:
         first_order_date = pd.read_sql_query('SELECT order_date FROM orders ORDER BY order_date DESC limit 1;', engine)
         first_order_date = first_order_date.loc[0, "order_date"].date()+ dt.timedelta(days=1)
@@ -39,13 +39,13 @@ def main():
     max_postcode_id_sql = pd.read_sql_query('SELECT MAX(id) FROM postcode;', engine)
     max_pc = max_postcode_id_sql.loc[0, "MAX(id)"]
 
-
+    #this while loop runs the program for each day that is missing from the start date until the present date
     while first_order_date <= todays_date:
-        #run program - to implement
-
+        #if there is data in the null dataframe, needed as if its the first run it will be empty
         if null_df is not None and not null_df.empty:
             null_df = update_delivery_columns(null_df)
 
+        #random number of orders for each day
         n = np.random.choice(range(50, 150))
         df = generate_order_number(next_id, next_id + n)
         df = add_columns(df, first_order_date, n, max_pc)
@@ -59,7 +59,8 @@ def main():
 
         df.to_sql('todays_orders', engine, if_exists='replace', index=False)
         null_df.to_sql('null_orders', engine, if_exists='replace', index=False)
-
+        
+        #moves all orders from table "todays orders" to "orders", either updates if exists, or creates new row
         sql_table_update = "INSERT INTO orders " \
                            "SELECT " \
                            "todays_orders.order_number, " \
